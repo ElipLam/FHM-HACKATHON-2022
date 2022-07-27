@@ -151,5 +151,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# my ignore
 crawled_data/players_matches/
+crawled_data/matches/
+crawled_data/players/
+crawled_data/players_info/
+crawled_data/players_wl/
 IaC/credentials.ini

@@ -1,0 +1,68 @@
+CREATE schema hackathon;
+
+CREATE TABLE hackathon.heroes (
+  hero_id INTEGER NOT NULL, 
+  hero_name character varying,
+  winrate_all REAL
+);
+
+CREATE TABLE hackathon.players (
+  player_id INTEGER NOT NULL, 
+  win INTEGER,
+  lose INTEGER,
+  winrate REAL,
+  rank_tier INTEGER,
+  mmr_estimate INTEGER
+);
+
+CREATE TABLE hackathon.player_hero (
+  player_id INTEGER NOT NULL,
+  hero_id INTEGER NOT NULL,
+  winrate_hero REAL,
+  winrate_team REAL,
+  winrate_enemy REAL
+);
+
+CREATE TABLE hackathon.gamemodes (
+  gamemode_id INTEGER NOT NULL,
+  gamemode_name character varying
+);
+
+CREATE TABLE hackathon.matches (
+  match_id INTEGER NOT NULL, 
+  gamemode_id INTEGER NOT NULL,
+  radiant_win BOOL
+);
+
+CREATE TABLE hackathon.player_match (
+  player_id INTEGER,  
+  match_id INTEGER NOT NULL, 
+  is_radiant BOOL,
+  hero_id INTEGER
+);
+
+
+ALTER TABLE hackathon.heroes ADD CONSTRAINT heroes_pk PRIMARY KEY (hero_id);
+
+ALTER TABLE hackathon.players ADD CONSTRAINT players_pk PRIMARY KEY (player_id);
+
+ALTER TABLE hackathon.player_hero ADD CONSTRAINT player_hero_pk PRIMARY KEY (player_id, hero_id);
+
+ALTER TABLE hackathon.player_hero ADD CONSTRAINT player_hero_players_fk
+FOREIGN KEY (player_id) REFERENCES hackathon.players (player_id);
+
+ALTER TABLE hackathon.player_hero ADD CONSTRAINT player_hero_heroes_fk
+FOREIGN KEY (hero_id) REFERENCES hackathon.heroes (hero_id);
+
+ALTER TABLE hackathon.gamemodes ADD CONSTRAINT gamemodes_pk PRIMARY KEY (gamemode_id);
+
+ALTER TABLE hackathon.matches ADD CONSTRAINT matches_pk PRIMARY KEY (match_id);
+
+ALTER TABLE hackathon.matches ADD CONSTRAINT matches_gamemodes_fk
+FOREIGN KEY (gamemode_id) REFERENCES hackathon.gamemodes (gamemode_id);
+
+ALTER TABLE hackathon.player_match ADD CONSTRAINT player_match_players_fk
+FOREIGN KEY (player_id) REFERENCES hackathon.players (player_id);
+
+ALTER TABLE hackathon.player_match ADD CONSTRAINT player_match_matches_fk
+FOREIGN KEY (match_id) REFERENCES hackathon.matches (match_id);
