@@ -128,40 +128,6 @@ def json_to_dataframe(input_path, columns, message):
         return False, error_files
 
 
-# columns = ["win","lose"]
-# ka,err = json_to_dataframe("D:\Python\hackathon\crawled_data\players_wl\*.json",columns,"Extracting players info...")
-
 if __name__ == "__main__":
     print("You are in", BASE_PATH)
-    # players_info_value = glob.glob(
-    #     f"D:\Python\hackathon\crawled_data\players_wl\*.json"
-    # )
-    # change_multi_rows_values_downloaded(
-    #     str(Path(ROOT, "check_download_player_id.parquet")),
-    #     [*players_info_value],
-    #     "player_id",
-    #     1,
-    #     "Reseting check dowfload player id of error files",
-    # )
-    # ka, err = json_to_dataframe(
-    #     "D:\Python\hackathon\crawled_data\players_info\*.json",
-    #     [
-    #         "rank_tier",
-    #         "leaderboard_rank",
-    #         "profile",
-    #         "competitive_rank",
-    #         "mmr_estimate",
-    #         "solo_competitive_rank",
-    #     ],
-    #     "Extracting players info...",
-    # )
-    # print(err)
-    # CHECK_FILE = "check_download_match_id.parquet"
-    # df = pd.read_parquet(CHECK_FILE)
-    # print(len(df))
-    # change_value_download(CHECK_FILE, "match_id", 6659214886, 0)
-    # change_value_download(CHECK_FILE, "match_id", 6634970862, 0)
-    # df = pd.read_parquet(CHECK_FILE)
-    # print(df.head())
-    # print(df[df["match_id"] == 6659211214])
     pass

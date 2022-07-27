@@ -120,6 +120,10 @@ finally:
     print("End Time =", current_time)
     print("Elapsed =", time.strftime("%H:%M:%S", time.gmtime(elapsed)))
 
+
+if __name__ == "__main__":
+
+    pass
 # ----------------------------------------------
 # player_heros.csv: win,games,with_games,hero_id,against_games,last_played,against_win,with_win
 

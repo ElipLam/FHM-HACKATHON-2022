@@ -33,21 +33,27 @@ session = boto3.session.Session(
     region_name=aws_credentails["region_name"],
 )
 
-
 BUCKET = "huongami-s3-demo"
 PREFIX = "hackathon/player_heroes/"
 
-resource = session.resource("s3")
-my_bucket = resource.Bucket(BUCKET)
-list_keys = []
-list_objects = my_bucket.objects.filter(Prefix=PREFIX)
-# list_objects = my_bucket.objects.filter(Prefix="hackathon/new_lake/")
-bar_objects = IncrementalBar("Getting object...", max=len([*list_objects]))
-for s3_object in list_objects:
-    list_keys.append(s3_object.key)
-    bar_objects.next()
-bar_objects.finish()
-df = pd.DataFrame(list_keys, columns=["key"])
-df["downloaded"] = 0
-df.to_csv("check_download_player_heroes.csv", index=False)
-print(df.head())
+
+def get_list_player_heroes():
+    resource = session.resource("s3")
+    my_bucket = resource.Bucket(BUCKET)
+    list_keys = []
+    list_objects = my_bucket.objects.filter(Prefix=PREFIX)
+    # list_objects = my_bucket.objects.filter(Prefix="hackathon/new_lake/")
+    bar_objects = IncrementalBar("Getting object...", max=len([*list_objects]))
+    for s3_object in list_objects:
+        list_keys.append(s3_object.key)
+        bar_objects.next()
+    bar_objects.finish()
+    df = pd.DataFrame(list_keys, columns=["key"])
+    df["downloaded"] = 0
+    df.to_csv("check_download_player_heroes.csv", index=False)
+    print(df.head())
+
+
+if __name__ == "__main__":
+    get_list_player_heroes()
+    pass

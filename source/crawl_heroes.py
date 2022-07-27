@@ -8,18 +8,23 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-start_time = time.time()
-# heros_url = "https://api.opendota.com/api/heroes"
-heroes_stats_url = "https://api.opendota.com/api/heroStats"
-resp = requests.get(heroes_stats_url, headers=None)
+
+def crawl_heroes():
+    start_time = time.time()
+    heroes_stats_url = "https://api.opendota.com/api/heroStats"
+    resp = requests.get(heroes_stats_url, headers=None)
+
+    f = open("crawled_data/heroes.json", "wb")
+    f.write(resp.content)
+    f.close()
+
+    num_heros = len(json.loads(resp.content))
+    print("Crawled", num_heros, "heros.")
 
 
-f = open("crawled_data/heroes.json", "wb")
-f.write(resp.content)
-f.close()
-
-num_heros = len(json.loads(resp.content))
-print("Crawled", num_heros, "heros.")
+if __name__ == "__main__":
+    crawl_heroes()
+    pass
 
 """
 [
