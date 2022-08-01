@@ -25,8 +25,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-INPUT_FILENAME = "new_lake/total_files_v2.csv"
-OUTPUT_FILENAME = "new_lake/player_match.csv"
+INPUT_FILENAME = "new_lake/50k_matches.parquet"
+OUTPUT_FILENAME = "new_lake/players_matches.parquet"
 
 
 def etl_player_match():
@@ -35,7 +35,7 @@ def etl_player_match():
     print("Start Time =", current_time)
     start_time = time.time()
 
-    input_df = pd.read_csv(INPUT_FILENAME, encoding="utf8")
+    input_df = pd.read_parquet(INPUT_FILENAME)
     list_df = []
 
     bar = IncrementalBar(
@@ -96,7 +96,7 @@ def etl_player_match():
     output_df = pd.concat(list_df, ignore_index=True)
     output_df["account_id"] = output_df["account_id"].astype("Int64")
     bar.finish()
-    output_df.to_csv(OUTPUT_FILENAME, index=False)
+    output_df.to_parquet(OUTPUT_FILENAME, index=False)
     print(output_df.head())
 
     end_time = time.time()

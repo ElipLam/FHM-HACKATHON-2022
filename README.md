@@ -19,16 +19,18 @@ Run file following:
 - `get_match_id.py` save to check_download_match_id.parquet.
 - `crawl_matches.py` save to match file in crawled_data/matches/{match_id}.json 
 - `s3_etl_matches.py` save to new_lake/50k_matches.parquet and create check_download_player_id.parquet
-- `crawl_all_players.py` save to crawled_data/players_info/{player_id}.json and crawled_data/players_wl/{player_id}.json
+- `crawl_all_players.py` save to crawled_data/players_info/{player_id}.json and crawled_data/players_wl/{player_id}.json and  crawled_data/players_heroes/{player_id}.json
 
 
 ### Steps to ETL data
 
 Run file following:
 - `s3_etl_heroes.py` save to new_lake/heroes.parquet.
-- `s3_etl_players_heroes.py` save to new_lake/players_heroes.parquet.
 - `s3_etl_players.py` save to new_lake/players.parquet
+- `s3_etl_players_heroes.py` save to new_lake/players_heroes.parquet.
 - `s3_etl_players_matches.py` save to new_lake/players_matches.parquet
+
+
 
 
 

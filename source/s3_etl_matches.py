@@ -62,6 +62,7 @@ def etl_matches():
         "leagueid",
         "region",
         "patch",
+        "start_time",
     ]
     matches_path = str(Path(ROOT, SUB_FOLDER))
     # print(matches_path)
@@ -113,6 +114,7 @@ def etl_matches():
                         "leagueid",
                         "region",
                         "patch",
+                        "start_time",
                     ]:
                         if col in data_json.keys():
                             data[col].append(data_json[col])

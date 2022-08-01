@@ -1,5 +1,5 @@
 """
-Extract s3://huongami-s3-demo/hackathon/player_heroes/ to new_lake/player_heros.csv
+Extract s3://huongami-s3-demo/hackathon/[players_info.csv, player_wl.csv] to new_lake/players.csv
 """
 
 import pandas as pd
@@ -11,127 +11,100 @@ import boto3
 import json
 import ast
 import time
-from datetime import datetime
 import sys
 from pathlib import Path
-from io import StringIO
+import glob
 
+# my module
+from common import *
 
-now = datetime.now()
-current_time = now.strftime("%H:%M:%S")
-print("Start Time =", current_time)
-start_time = time.time()
-
-
-# IaC
-aws_section = "aws.amazon.com"
 ROOT = Path(__file__).resolve().parents[1]
-BASE_PATH = Path(__file__).resolve().parents[0]
-IAC_FILE_PATH = str(Path(ROOT, "IaC/credentials.ini"))
-sys.path.append(str(Path(ROOT, "IaC")))
-from credentials import get_credentials
+PLAYERS_HEROES_PATH = str(Path(ROOT, "crawled_data", "players_heroes"))
+OUTPUT_PATH = str(Path(ROOT, "new_lake/players_heroes.parquet"))
 
 
-# boto3
-aws_credentails = get_credentials(IAC_FILE_PATH, aws_section)
-session = boto3.session.Session(
-    aws_access_key_id=aws_credentails["aws_access_key_id"],
-    aws_secret_access_key=aws_credentails["aws_secret_access_key"],
-    region_name=aws_credentails["region_name"],
-)
-
-
-BUCKET = "huongami-s3-demo"
-PREFIX = "hackathon/player_heroes/"
-CHECK_FILE = "check_download_player_heroes.parquet"
-OUTPUT_FILE = "new_lake/players_heroes.parquet"
-list_keys = []
-
-resource = session.resource("s3")
-my_bucket = resource.Bucket(BUCKET)
-
-
-# get list objects
-list_objects = my_bucket.objects.filter(Prefix=PREFIX)
-# list_objects = my_bucket.objects.filter(Prefix="hackathon/new_lake/")
-bar_objects = IncrementalBar("Getting object...", max=len([*list_objects]))
-for s3_object in list_objects:
-    list_keys.append(s3_object.key)
-    bar_objects.next()
-bar_objects.finish()
-
-# save list objects to check download file
-df_check = pd.DataFrame(list_keys, columns=["key"])
-df_check["downloaded"] = 0
-df_check.to_parquet(CHECK_FILE, index=False)
-
-# read list objects from check download file
-df_read_check_download = pd.read_parquet(CHECK_FILE)
-list_keys = df_read_check_download["key"].tolist()
-
-
-if Path(OUTPUT_FILE).is_file():
-    global_df = pd.read_parquet(OUTPUT_FILE)
-else:
-    global_df = pd.DataFrame(
-        columns=[
-            "win",
-            "games",
-            "with_games",
-            "hero_id",
-            "against_games",
-            "last_played",
-            "against_win",
-            "with_win",
-        ],
+# def show_mmr_estimate(x):
+#     data_parsed = ast.literal_eval(x)
+#     if "estimate" in data_parsed.keys():
+#         return data_parsed["estimate"]
+#     else:
+#         return None
+def players_heroes_json_to_dataframe(input_path, columns, message):
+    """Return a pandas dataframe and list of error file path."""
+    error_files = []
+    data_dict = {col: [] for col in columns}
+    index = []
+    path_list = glob.glob(input_path)
+    bar = IncrementalBar(
+        message,
+        max=len(path_list),
+        suffix="%(index)d/%(max)d | %(elapsed_td)s",
     )
-list_df = [global_df]
-bar_data = IncrementalBar(
-    "Appending data...",
-    max=len(df_read_check_download[df_read_check_download["downloaded"] == 0]),
-    suffix="%(index)d/%(max)d | %(elapsed_td)s",
-)
-try:
-    for index, row in df_read_check_download.iterrows():
-        if row["downloaded"] == 0:
-            key = row["key"]
-            player_id_files = key.split("/")[-1]
-            player_id = player_id_files.split(".")[0]
-            raw_data = resource.Object(BUCKET, key)
-            data = raw_data.get()["Body"].read().decode("utf-8")
-            df = pd.read_csv(StringIO(data))
-            df["player_id"] = player_id
-            df_read_check_download.loc[index, "downloaded"] = 1
-            list_df.append(df)
-            bar_data.next()
-except Exception as e:
-    print("ERROR:", e)
-finally:
-    bar_data.finish()
-    # print(df_read_check_download.head())
-    df_read_check_download.to_parquet(CHECK_FILE, index=False)
-    result_df = pd.concat(list_df)
-    result_df.to_parquet(OUTPUT_FILE, index=False)
+    for json_path in path_list:
+        try:
+            idx, _ = get_filename_extension(json_path)
+            with open(json_path, "rb") as f:
+                data = json.load(f)
+                # print(data)
+                # print(len(data))
+                for player_hero in data:
+                    for col in columns:
+                        data_dict[col].append(player_hero[col])
+                    index.append(idx)
+        except Exception as e:
+            error_files.append(json_path)
+        finally:
+            bar.next()
+    df = pd.DataFrame(data_dict, index=index)
+    if error_files == []:
+        flag = True
+    else:
+        flag = False
+    return flag, df, error_files
 
-    end_time = time.time()
-    elapsed = end_time - start_time
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    print("End Time =", current_time)
-    print("Elapsed =", time.strftime("%H:%M:%S", time.gmtime(elapsed)))
+
+def etl_players_heroes():
+
+    # extract
+    players_heroes_columns = [
+        "hero_id",
+        "with_win",
+        "win",
+        "against_games",
+        "last_played",
+        "against_win",
+        "games",
+        "with_games",
+    ]
+    (
+        players_heroes_flag,
+        players_heroes_df,
+        players_heroes_erros_list,
+    ) = players_heroes_json_to_dataframe(
+        f"{PLAYERS_HEROES_PATH}\*.json",
+        players_heroes_columns,
+        "Extracting players heroes...",
+    )
+    df_players_heroes = players_heroes_df  # debug: skip error files
+    df_players_heroes = df_players_heroes.reset_index()  # debug: skip error files
+    df_players_heroes.rename(columns={"index": "player_id"}, inplace=True)
+    if players_info_flag == True:
+        # df_players_info_draw = players_info_df
+        pass
+    else:
+        change_multi_rows_values_downloaded(
+            str(Path(ROOT, "check_download_player_id.parquet")),
+            players_heroes_erros_list,
+            "player_id",
+            0,
+            "Reseting check dowfload player id of error files",
+        )
+    #     raise Exception("Incomplete players information data.")
+
+    df_players_heroes.to_parquet(OUTPUT_PATH, index=False)
+    print("Done.")
 
 
 if __name__ == "__main__":
-
+    etl_players_heroes()
     pass
-# ----------------------------------------------
-# player_heros.csv: win,games,with_games,hero_id,against_games,last_played,against_win,with_win
-
-#  player heros table ::
-#   PlayerId:ten file,
-#   HeroId:player_heros.csv(hero_id),
-#   Profiency,
-#   TimePlay,
-#   Winrateplayer_heros.csv(win/games),
-#   WinrateTeam:player_heros.csv(with_win/with_games),
-#   WinrateEnemy:player_heros.csv(against_win/against_games)

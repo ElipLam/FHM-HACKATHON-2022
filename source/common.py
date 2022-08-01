@@ -5,6 +5,7 @@ import requests
 import glob
 import json
 from progress.bar import IncrementalBar
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_PATH = Path(__file__).resolve().parents[0]
@@ -62,10 +63,15 @@ def change_all_values_downloaded(file_path, value):
         df.to_csv(file_path, index=False)
 
 
-def crawl_data(url, output_path):
+def crawl_data(url, output_path, interval=1):
+    download_start_time = time.time()
     response = requests.get(url, headers=None)
     with open(output_path, "wb") as f:
         f.write(response.content)
+    download_end_time = time.time()
+    elapsed_time = download_end_time - download_start_time
+    if elapsed_time < interval:
+        time.sleep(interval - elapsed_time)
 
 
 def change_multi_rows_values_downloaded(
@@ -92,7 +98,6 @@ def change_multi_rows_values_downloaded(
                 check_download_df[field_name] == err_id, "downloaded"
             ] = value
             bar.next()
-            # print(check_download_df[check_download_df[field_name] == err_id])
         check_download_df.to_parquet(out_put, index=False)
         bar.finish()
     pass
@@ -102,30 +107,31 @@ def json_to_dataframe(input_path, columns, message):
     """Return a pandas dataframe and list of error file path."""
     error_files = []
     data_dict = {col: [] for col in columns}
-
+    index = []
     path_list = glob.glob(input_path)
     bar = IncrementalBar(
         message,
         max=len(path_list),
         suffix="%(index)d/%(max)d | %(elapsed_td)s",
     )
-    # print(len(path_list))
     for json_path in path_list:
         try:
-            # print(json_path)
+            idx, _ = get_filename_extension(json_path)
             with open(json_path, "rb") as f:
                 data = json.load(f)
                 for col in columns:
                     data_dict[col].append(data[col])
+                index.append(idx)
         except Exception as e:
             error_files.append(json_path)
         finally:
             bar.next()
-    df = pd.DataFrame(data_dict)
+    df = pd.DataFrame(data_dict, index=index)
     if error_files == []:
-        return True, df
+        flag = True
     else:
-        return False, error_files
+        flag = False
+    return flag, df, error_files
 
 
 if __name__ == "__main__":

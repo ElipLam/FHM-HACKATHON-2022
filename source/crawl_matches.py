@@ -64,7 +64,7 @@ def crawl_matches():
                 crawl_match(match_id, start_time)
                 match_df.loc[index, "downloaded"] = 1
                 bar.next()
-                time.sleep(0.2)
+                # time.sleep(0.2)
     except Exception as e:
         print(e)
     finally:

@@ -157,4 +157,5 @@ crawled_data/matches/
 crawled_data/players/
 crawled_data/players_info/
 crawled_data/players_wl/
+crawled_data/players_heroes/
 IaC/credentials.ini
