@@ -9,6 +9,13 @@
 ### Table in Redshift
 ![database](images/Dota2_Design_Warehouse.png)
 
+## Table of Contents
+
+- [Steps to crawl data](#steps-to-crawl-data)
+- [Steps to ETL data](#steps-to-etl-data)
+- [API support](#api-support)
+- [Support Command-line](#support-command-line)
+ 
 ### Steps to crawl data
 
 Run file following:
@@ -45,3 +52,68 @@ https://docs.opendota.com/
 | Call Limit    | 50000 per month                     | Unlimited                             |
 | Rate Limit    | 60 calls per minute                 | 1200 calls per minute                 |
 | Support       | Community support via Discord group | Priority support from core developers |
+
+
+## Support Command-line
+
+- To set your global username/email configuration:
+Open the command line.
+
+```
+git config --global user.name "FIRST_NAME LAST_NAME"
+git config --global user.email "MY_NAME@example.com"
+```
+
+- Create Virtual Environment :
+
+```console
+python -m venv venv
+venv\Scripts\activate
+(venv) >
+``` 
+> Create Virtual Environment :
+
+```console
+deactivate
+``` 
+> fix `cannot be loaded because running scripts is disabled on this system`:
+```console
+set-ExecutionPolicy RemoteSigned -Scope CurrentUser 
+Get-ExecutionPolicy
+Get-ExecutionPolicy -list  
+```
+ 
+- Create requirements.txt :
+
+```console
+py -m pipreqs.pipreqs . --encoding=utf8
+``` 
+
+- Create requirements.txt with all library already exists:
+
+```console
+pip freeze > requirements.txt
+```
+
+- Install requirements:
+```console
+pip install -r requirements.txt
+```
+- Use pytest:
+```console
+pytest tests
+pytest tests/test_export_data.py::TestRealTime
+pytest tests/test_export_data.py::TestRealTime::test_real_time_negative
+```
+- Upgrade library:
+
+```console
+pip install -U <library>
+```
+- Upgrade pip:
+
+```console
+py -m pip install --upgrade pip
+```
+
+###### [on top](#table-of-contents)

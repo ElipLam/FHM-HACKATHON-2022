@@ -1,3 +1,1 @@
-lake/players_info.csv filter=lfs diff=lfs merge=lfs -text
-new_lake/players_heroes.csv filter=lfs diff=lfs merge=lfs -text
-check_download_match_id.csv filter=lfs diff=lfs merge=lfs -text
+check_download_match_id.parquet filter=lfs diff=lfs merge=lfs -text
