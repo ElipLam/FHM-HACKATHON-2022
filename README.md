@@ -1,5 +1,13 @@
 # FHM-HACKATHON-2022 - Connecting the world
 ## Predict the winning team before the match starts in Dota 2
+## Table of Contents
+
+- [Pipeline](#pipeline)
+- [Table in Redshift](#table-in-redshift)
+- [Steps to crawl data](#steps-to-crawl-data)
+- [Steps to ETL data](#steps-to-etl-data)
+- [API support](#api-support)
+- [Support Command-line](#support-command-line)
 <p align="center">
   <img src="images/Poster.png" width="650" title="hover text">
 </p>
@@ -9,12 +17,6 @@
 ### Table in Redshift
 ![database](images/Dota2_Design_Warehouse.png)
 
-## Table of Contents
-
-- [Steps to crawl data](#steps-to-crawl-data)
-- [Steps to ETL data](#steps-to-etl-data)
-- [API support](#api-support)
-- [Support Command-line](#support-command-line)
  
 ### Steps to crawl data
 
