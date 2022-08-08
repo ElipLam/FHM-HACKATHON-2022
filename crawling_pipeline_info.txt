@@ -1,8 +1,0 @@
-http://api.steampowered.com/<interface name>/<method name>/v<version>/?key=<api key>&format=<format>.
-
-match_id: 6658373609
-https://api.opendota.com/api/matches/6658373609
-
-crawl_pro_player.py -> crawled_data/pro_player.json -> get_pro_player_id.py -> (check_download_pro_player_matches.csv) -> crawl_player_matches.py -> crawled_data/players_matches/{player_id}.json -> get_match_id.py -> (check_download_match_id.csv)
-
- -> crawl_matches.py -> S3-(data/matches/{match_id}.json) -> crawl_player.py -> crawled_data/player.json
