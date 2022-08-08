@@ -73,7 +73,12 @@ python -m venv venv
 venv\Scripts\activate
 (venv) >
 ``` 
-> Create Virtual Environment :
+```console
+python3 -m venv venv
+venv\bin\activate
+(venv) >
+``` 
+> Deactivate Virtual Environment :
 
 ```console
 deactivate

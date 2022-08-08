@@ -159,3 +159,4 @@ crawled_data/players_info/
 crawled_data/players_wl/
 crawled_data/players_heroes/
 IaC/credentials.ini
+check_download_match_id.parquet
