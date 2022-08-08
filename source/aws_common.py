@@ -60,7 +60,7 @@ def aws_put_object(data, bucket, key):
 
 def aws_get_list_object(bucket, prefix=None):
     s3 = session.resource("s3")
-    my_bucket = s3.Bucket(BUCKET)
+    my_bucket = s3.Bucket(bucket)
     # list_keys = []
     if prefix == None:
         list_objects = my_bucket.objects.all()
